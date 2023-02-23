@@ -3,19 +3,6 @@
 #include <SDL3/SDL.h>
 #include <vector>
 
-// Point class
-typedef struct Point
-{
-	int x, y;
-} Point;
-
-#define LONG 109
-#define LARG 109
-
-//void move();
-//int fin_jeu();
-//int check_end(vector < Point > chemin, vector < Point > chemin1, int i, int j);
-
 // Maze class
 class Maze
 {
@@ -34,24 +21,27 @@ class Maze
 
 		// Useful enumeration
 		enum Type { WALL, GROUND };
-
-		// Useful enumration for the algorithm type that will be used in the generation of the maze
-		enum Algorithm { BFS };
 		
 		// Textures of Wall and Ground
-		static SDL_Texture* textures[2];
+		static SDL_Texture* textures_[2];
 
 		// The current position of the current cell
-		SDL_FRect currCellPosition;
+		SDL_FRect currCellPosition_;
 
 		// If we need to see trail of the current cell when backtracking
-		bool useTrail;
+		bool useTrail_;
 
 
     public:
 
+		// Useful enumration for the algorithm type that will be used in the generation of the maze
+		enum Algorithm { BFS, RandomizedPrim };
+
+		// The algorithm that will be used to generate the maze
+		Algorithm algorithm_;
+
 		// Constructor and destructor
-		Maze();
+		Maze(const Algorithm &algorithm);
 		~Maze();
 
 		/**
@@ -67,10 +57,15 @@ class Maze
         void update();
 
 		/**
-		* \brief Generate the maze using a given algorithm
-		* \param algorithm The algorithm type that will be used in the generation of the maze
+		* \brief Generate the maze using BFS Algorithm
 		* \param trailOn if we want ot see the trail of the current cell when backtracking
 		* \return
 		*/
-		void generate(const Algorithm &algorithm, const bool &trailOn = true);
+		void generateBFS(const bool &trailOn = true);
+
+		/**
+		* \brief Generate the maze using Randomized Prim's Algorithm
+		* \return
+		*/
+		void generateRandomizedPrim();
 };

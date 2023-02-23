@@ -5,6 +5,6 @@
 
 int main(int argc, char *argv[])
 {
-    Maze().run();
+    Maze(Maze::Algorithm::BFS).run();
     return 0;
 }
