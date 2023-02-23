@@ -19,10 +19,19 @@ class Runner
 		// The maze grid to search solution for
 		std::vector<std::vector<int>> grid_;
 
+		// The stack
+		std::stack<std::pair<int, int>> stack_;
+
 	public:
 
 		// Useful enumeration
+		enum Type { WALL, GROUND };
+
+		// Useful enumeration
 		enum Color {RED, GREEN, BLUE};
+
+		// For the direction
+		enum Direction { UP, DOWN, LEFT, RIGTH };
 
 		// The size of the runner
 		static const int SIZE;
@@ -62,5 +71,12 @@ class Runner
 		* \return
 		*/
 		bool isArrived(const std::pair<int, int>& endPoint);
+
+
+		/**
+		* \brief Get all neighbors of the runner
+		* \return
+		*/
+		std::vector<std::pair<int, int>> getNeighbors();
 };
 

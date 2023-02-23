@@ -8,8 +8,8 @@
 #include "runner.h"
 #include "maze.h"
 
-const int Maze::WIDTH = 29;
-const int Maze::HEIGHT = 29;
+const int Maze::WIDTH = 9;
+const int Maze::HEIGHT = 9;
 const int Maze::SIZE = 16;
 
 SDL_Texture* Maze::textures_[2] = {nullptr};
@@ -70,7 +70,7 @@ Maze::~Maze()
 void Maze::run()
 {
 	// Starting point
-	auto startPoint = std::make_pair(int(currCellPosition_.x * Maze::SIZE), int(currCellPosition_.y * Maze::SIZE));
+	auto startPoint = std::make_pair(16,16);// std::make_pair(int(currCellPosition_.x * Maze::SIZE), int(currCellPosition_.y * Maze::SIZE));
 
 	// Generate the maze
 	if (algorithm_ == Algorithm::BFS)
@@ -108,7 +108,7 @@ void Maze::run()
 
 		// Render all objects
 		SDL_RenderPresent(renderer_);
-		SDL_Delay(50);
+		SDL_Delay(1000);
 	}
 
 	SDL_Delay(5000);
@@ -200,7 +200,7 @@ void Maze::generateBFS(const bool& trailOn)
 
 		// Render all objects
 		SDL_RenderPresent(renderer_);
-		SDL_Delay(50);
+		//SDL_Delay(50);
 	}
 }
 
@@ -263,7 +263,7 @@ void Maze::generateRandomizedPrim()
 
 		// Render all objects
 		SDL_RenderPresent(renderer_);
-		SDL_Delay(50);
+		//SDL_Delay(50);
 	}
 }
 
@@ -288,10 +288,11 @@ void Maze::renderPoints(const std::pair<int, int>& startPoint, const std::pair<i
 {
 	// Rendering endPoint ans startPoint
 	SDL_FRect rect = { float(startPoint.first), float(startPoint.second), Maze::SIZE, Maze::SIZE };
-	SDL_SetRenderDrawColor(renderer_, 0, 255, 0, 255);
-	SDL_RenderFillRect(renderer_, &rect);
-
-	rect = { float(endPoint.first), float(endPoint.second), Maze::SIZE, Maze::SIZE };
+	/*
 	SDL_SetRenderDrawColor(renderer_, 255, 0, 0, 255);
+	SDL_RenderFillRect(renderer_, &rect);
+	*/
+	rect = { float(endPoint.first), float(endPoint.second), Maze::SIZE, Maze::SIZE };
+	SDL_SetRenderDrawColor(renderer_, 0, 255, 0, 255);
 	SDL_RenderFillRect(renderer_, &rect);
 }

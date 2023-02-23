@@ -19,8 +19,6 @@ class Maze
 		// Dimensions of the maze
 		static const int WIDTH, HEIGHT, SIZE;
 
-		// Useful enumeration
-		enum Type { WALL, GROUND };
 		
 		// Textures of Wall and Ground
 		static SDL_Texture* textures_[2];
@@ -33,12 +31,14 @@ class Maze
 
 
     public:
+		// Useful enumeration
+		enum Type { WALL, GROUND };
 
 		// Useful enumration for the algorithm type that will be used in the generation of the maze
 		enum Algorithm { BFS, RandomizedPrim };
 
 		// For the direction
-		enum Direction { UP, DOWN, LEFT, RIGTH };
+		enum Direction{ UP, DOWN, LEFT, RIGTH };
 
 		// The algorithm that will be used to generate the maze
 		Algorithm algorithm_;
