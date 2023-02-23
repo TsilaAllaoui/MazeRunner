@@ -5,7 +5,6 @@
 
 int main(int argc, char *argv[])
 {
-	Maze(Maze::Algorithm::RandomizedPrim, true).run();
-	Maze(Maze::Algorithm::BFS).run();
+	Maze(Maze::Algorithm::BFS, true).run();
     return 0;
 }

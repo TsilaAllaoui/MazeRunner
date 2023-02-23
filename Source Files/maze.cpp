@@ -8,8 +8,8 @@
 #include "runner.h"
 #include "maze.h"
 
-const int Maze::WIDTH = 9;
-const int Maze::HEIGHT = 9;
+const int Maze::WIDTH = 39;
+const int Maze::HEIGHT = 39;
 const int Maze::SIZE = 16;
 
 SDL_Texture* Maze::textures_[2] = {nullptr};
@@ -28,18 +28,18 @@ Maze::Maze(const Algorithm &algorithm, const bool &isMonochrome)
 	{
 		SDL_Surface *surface = SDL_CreateSurface(Maze::SIZE, Maze::SIZE, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA8888);
 		SDL_FillSurfaceRect(surface, NULL, 0xFFFFFFFF);
-		Maze::textures_[Maze::Type::GROUND] = SDL_CreateTextureFromSurface(renderer_, surface);
+		Maze::textures_[Runner::Type::GROUND] = SDL_CreateTextureFromSurface(renderer_, surface);
 		SDL_FillSurfaceRect(surface, NULL, 0);
-		Maze::textures_[Maze::Type::WALL] = SDL_CreateTextureFromSurface(renderer_, surface);
+		Maze::textures_[Runner::Type::WALL] = SDL_CreateTextureFromSurface(renderer_, surface);
 	}
 	else
 	{
-		Maze::textures_[Maze::Type::GROUND] = IMG_LoadTexture(renderer_, "./images/ground.png");
-		Maze::textures_[Maze::Type::WALL] = IMG_LoadTexture(renderer_, "./images/wall.png");
+		Maze::textures_[Runner::Type::GROUND] = IMG_LoadTexture(renderer_, "./images/ground.png");
+		Maze::textures_[Runner::Type::WALL] = IMG_LoadTexture(renderer_, "./images/wall.png");
 	}
 
 	// Allocating grid
-	grid_ = std::vector<std::vector<int>>(Maze::HEIGHT, std::vector<int>(Maze::WIDTH, Type::WALL));
+	grid_ = std::vector<std::vector<int>>(Maze::HEIGHT, std::vector<int>(Maze::WIDTH, Runner::Type::WALL));
 
 	// Setting up the current cell
 	int x, y;
@@ -70,8 +70,8 @@ Maze::~Maze()
 void Maze::run()
 {
 	// Starting point
-	auto startPoint = std::make_pair(16,16);// std::make_pair(int(currCellPosition_.x * Maze::SIZE), int(currCellPosition_.y * Maze::SIZE));
-
+	auto startPoint = std::make_pair(int(currCellPosition_.x * Maze::SIZE), int(currCellPosition_.y * Maze::SIZE));
+	
 	// Generate the maze
 	if (algorithm_ == Algorithm::BFS)
 		generateBFS();
@@ -79,14 +79,14 @@ void Maze::run()
 		generateRandomizedPrim();
 
 	// End point
-	std::pair<int, int> endPoint = std::make_pair(2* Maze::SIZE,2 * Maze::SIZE);
+	std::pair<int, int> endPoint = std::make_pair(2 * Maze::SIZE, 2 * Maze::SIZE);
 	while(true)
 	{
 		auto i = (rand() % Maze::WIDTH - 2) + 2;
 		auto j = (rand() % Maze::HEIGHT - 2) + 2;
-		if (grid_[i][j] == Type::GROUND)
+		if (grid_[i][j] == Runner::Type::GROUND)
 		{
-			endPoint = std::make_pair(i * Maze::SIZE, j * Maze::SIZE);
+			endPoint = std::make_pair(j * Maze::SIZE, i * Maze::SIZE);
 			break;
 		}
 	}
@@ -108,7 +108,7 @@ void Maze::run()
 
 		// Render all objects
 		SDL_RenderPresent(renderer_);
-		SDL_Delay(1000);
+		SDL_Delay(10);
 	}
 
 	SDL_Delay(5000);
@@ -159,7 +159,7 @@ void Maze::generateBFS(const bool& trailOn)
 		}
 
 		// Setting current cell as GROUND
-		grid_[pt.first][pt.second] = Type::GROUND;
+		grid_[pt.first][pt.second] = Runner::Type::GROUND;
 
 		// Getting adjacents valid cells
 		auto adjCells = getNeighborsOfCell(pt.first, pt.second);
@@ -183,7 +183,7 @@ void Maze::generateBFS(const bool& trailOn)
 		{
 			auto randomCell = adjCells[rand() % (adjCells.size())];
 			q.emplace(randomCell.first);
-			grid_[randomCell.second.first][randomCell.second.second] = Type::GROUND;
+			grid_[randomCell.second.first][randomCell.second.second] = Runner::Type::GROUND;
 			
 			// Updating the current cell position
 			currCellPosition_.y = randomCell.first.first * Maze::SIZE;
@@ -213,7 +213,7 @@ void Maze::generateRandomizedPrim()
 	currentCell.y = 1;
 
 	// Updating that cell to be ground
-	grid_[currentCell.x][currentCell.y] = Type::GROUND;
+	grid_[currentCell.x][currentCell.y] = Runner::Type::GROUND;
 
 	// List of all neighbor
 	std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> neighbors;
@@ -243,12 +243,12 @@ void Maze::generateRandomizedPrim()
 		neighbors.erase(neighbors.begin() + index);
 
 		// If the chosen rando cell is ground, pass to next iteration
-		if (grid_[randomCell.first.first][randomCell.first.second] == Type::GROUND)
+		if (grid_[randomCell.first.first][randomCell.first.second] == Runner::Type::GROUND)
 			continue;
 
 		// Setting the chosen cell and the path to it as ground
-		grid_[randomCell.second.first][randomCell.second.second] = Type::GROUND;
-		grid_[randomCell.first.first][randomCell.first.second] = Type::GROUND;
+		grid_[randomCell.second.first][randomCell.second.second] = Runner::Type::GROUND;
+		grid_[randomCell.first.first][randomCell.first.second] = Runner::Type::GROUND;
 
 		// Updating current cell position
 		currentCell.x = randomCell.first.first;
@@ -271,13 +271,13 @@ std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> Maze::getNeighb
 {
 	std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> output;
 	int direction = rand() % 4;
-	if ((i - 2) > 0 && (i - 2) < Maze::WIDTH && grid_[i - 2][j] != Maze::Type::GROUND && (i - 2) > 0 && (i - 2) < Maze::HEIGHT && j > 0 && j < Maze::WIDTH)
+	if ((i - 2) > 0 && (i - 2) < Maze::WIDTH && grid_[i - 2][j] != Runner::Type::GROUND && (i - 2) > 0 && (i - 2) < Maze::HEIGHT && j > 0 && j < Maze::WIDTH)
 		output.emplace_back(std::make_pair(std::make_pair(i - 2, j), std::make_pair(i - 1, j)));
-	if ((i + 2) > 0 && (i + 2) < Maze::WIDTH && grid_[i + 2][j] != Maze::Type::GROUND && (i + 2) > 0 && (i + 2) < Maze::HEIGHT && j > 0 && j < Maze::WIDTH)
+	if ((i + 2) > 0 && (i + 2) < Maze::WIDTH && grid_[i + 2][j] != Runner::Type::GROUND && (i + 2) > 0 && (i + 2) < Maze::HEIGHT && j > 0 && j < Maze::WIDTH)
 		output.emplace_back(std::make_pair(std::make_pair(i + 2, j), std::make_pair(i + 1, j)));
-	if ((j - 2) > 0 && (j - 2) < Maze::WIDTH && grid_[i][j - 2] != Maze::Type::GROUND && (j - 2) > 0 && (j - 2) < Maze::HEIGHT && i > 0 && i < Maze::WIDTH)
+	if ((j - 2) > 0 && (j - 2) < Maze::WIDTH && grid_[i][j - 2] != Runner::Type::GROUND && (j - 2) > 0 && (j - 2) < Maze::HEIGHT && i > 0 && i < Maze::WIDTH)
 		output.emplace_back(std::make_pair(std::make_pair(i, j - 2), std::make_pair(i, j - 1)));
-	if ((j + 2) > 0 && (j + 2) < Maze::WIDTH && grid_[i][j + 2] != Maze::Type::GROUND && (j + 2) > 0 && (j + 2) < Maze::HEIGHT && i > 0 && i < Maze::WIDTH)
+	if ((j + 2) > 0 && (j + 2) < Maze::WIDTH && grid_[i][j + 2] != Runner::Type::GROUND && (j + 2) > 0 && (j + 2) < Maze::HEIGHT && i > 0 && i < Maze::WIDTH)
 		output.emplace_back(std::make_pair(std::make_pair(i, j + 2), std::make_pair(i, j + 1)));
 
 	return output;

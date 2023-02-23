@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 #include <vector>
+#include <deque>
 
 // Maze Runner class
 class Runner
@@ -19,8 +20,11 @@ class Runner
 		// The maze grid to search solution for
 		std::vector<std::vector<int>> grid_;
 
-		// The stack
-		std::stack<std::pair<int, int>> stack_;
+		// The stack to backtrack
+		std::deque<std::pair<int, int>> stack_;
+
+		// For retaining visited cells
+		std::vector<std::pair<int, int>> visited_;
 
 	public:
 

@@ -35,25 +35,28 @@ Runner::~Runner()
 
 void Runner::move()
 {
+	// Get possible neighbor
 	auto neighbors = getNeighbors();
 
+	// If no valid neighbor
 	if (neighbors.size() == 0)
 	{
-		stack_.pop();
-		render();
-		return;
+		stack_.pop_back();
+		pos_.y = stack_.back().first * Runner::SIZE;
+		pos_.x = stack_.back().second * Runner::SIZE;
 	}
 
-	auto index = rand() % (neighbors.size());
+	else
+	{
+		// Select a random cell in neighbor
+		auto index = rand() % (neighbors.size());
+		stack_.push_back(std::make_pair(pos_.y / Runner::SIZE, pos_.x / Runner::SIZE));
+		visited_.emplace_back(std::make_pair(pos_.y / Runner::SIZE, pos_.x / Runner::SIZE));
 
-	/*for (auto& cell : neighbors)
-		stack_.emplace(std::make_pair(cell.first / Runner::SIZE, cell.second / Runner::SIZE));*/
-	stack_.emplace(std::make_pair( pos_.x / Runner::SIZE, pos_.y / Runner::SIZE));
+		pos_.y = neighbors[index].first * Runner::SIZE;
+		pos_.x = neighbors[index].second * Runner::SIZE;
+	}
 	
- 	pos_.x = neighbors[index].first * Runner::SIZE;
-	pos_.y = neighbors[index].second * Runner::SIZE;
-
-
 	// Render the runner
 	render();
 }
@@ -72,38 +75,33 @@ std::vector<std::pair<int, int>> Runner::getNeighbors()
 {
 	std::vector<std::pair<int, int>> neighbors;
 
-	auto x = pos_.x / Runner::SIZE;
-	auto y = pos_.y / Runner::SIZE;
+	auto j = pos_.x / Runner::SIZE;
+	auto i = pos_.y / Runner::SIZE;
 
-	if ( (x + 1) > 0 && ((x + 1) < grid_.size() - 1) && grid_[x + 1][y] == Runner::Type::GROUND)
-		neighbors.emplace_back(std::make_pair(x + 1, y));
-	if ((x - 1) > 0 && ((x - 1) < grid_.size() - 1) && grid_[x - 1][y] == Runner::Type::GROUND)
-		neighbors.emplace_back(std::make_pair(x - 1, y));
-	if ((y + 1) > 0 && ((y + 1) < grid_[0].size() - 1) && grid_[x][y + 1] == Runner::Type::GROUND)
-		neighbors.emplace_back(std::make_pair(x, y + 1));
-	if ((y - 1) > 0 && ((y - 1) < grid_.size() - 1) && grid_[x][y - 1] == Runner::Type::GROUND)
-		neighbors.emplace_back(std::make_pair(x, y - 1));
+	if ( (i + 1) > 0 && ((i + 1) < grid_[0].size() - 1))
+		if (grid_[i + 1][j] == Runner::Type::GROUND)
+			neighbors.emplace_back(std::make_pair(i + 1, j));
+	if ((i - 1) > 0 && ((i - 1) < grid_[0].size() - 1))
+		if (grid_[i - 1][j] == Runner::Type::GROUND)
+			neighbors.emplace_back(std::make_pair(i - 1, j));
+	if ((j + 1) > 0 && ((j + 1) < grid_.size() - 1))
+		if (grid_[i][j + 1] == Runner::Type::GROUND)
+			neighbors.emplace_back(std::make_pair(i, j + 1));
+	if ((j - 1) > 0 && ((j - 1) < grid_.size() - 1))
+		if (grid_[i][j - 1] == Runner::Type::GROUND)
+			neighbors.emplace_back(std::make_pair(i, j - 1));
 
-	auto s = stack_;
+	// Temporary list to stock valid neighbor
+	std::vector<std::pair<int, int>> tmp;
+
+	// Stocking only valid neighbor that are not in the visisted cells list
 	for (int i = 0; i < neighbors.size(); i++)
 	{
-		while (!s.empty())
-		{
-			if (s.top() == neighbors[i])
-				neighbors.erase(neighbors.begin() + i);
-			s.pop();
-		}
+		std::pair<int, int> n = neighbors[i];
+		auto res = std::find(visited_.begin(), visited_.end(), n);
+		if (res == visited_.end())
+			tmp.emplace_back(n);
 	}
 
-	/*auto s = stack_;
-	while (!s.empty())
-	{
-		for (int i = 0; i < neighbors.size(); i++)
-		{
-			if (s.top() == neighbors[i])
-				neighbors.erase(neighbors.begin() + i);
-		}
-		s.pop();
-	}*/
-	return neighbors;
+	return tmp;
 }

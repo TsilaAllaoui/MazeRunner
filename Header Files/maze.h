@@ -32,7 +32,7 @@ class Maze
 
     public:
 		// Useful enumeration
-		enum Type { WALL, GROUND };
+		//enum Type { WALL, GROUND };
 
 		// Useful enumration for the algorithm type that will be used in the generation of the maze
 		enum Algorithm { BFS, RandomizedPrim };
