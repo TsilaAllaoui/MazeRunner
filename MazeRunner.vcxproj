@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="Source Files\main.cpp" />
     <ClCompile Include="Source Files\maze.cpp" />
+    <ClCompile Include="Source Files\runner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header Files\maze.h" />
+    <ClInclude Include="Header Files\runner.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

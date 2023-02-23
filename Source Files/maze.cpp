@@ -5,6 +5,7 @@
 #include <ctime>
 #include <stack>
 
+#include "runner.h"
 #include "maze.h"
 
 const int Maze::WIDTH = 29;
@@ -68,16 +69,52 @@ Maze::~Maze()
 
 void Maze::run()
 {
+	// Starting point
+	auto startPoint = std::make_pair(int(currCellPosition_.x * Maze::SIZE), int(currCellPosition_.y * Maze::SIZE));
+
 	// Generate the maze
 	if (algorithm_ == Algorithm::BFS)
 		generateBFS();
 	else if (algorithm_ == Algorithm::RandomizedPrim)
 		generateRandomizedPrim();
 
+	// End point
+	std::pair<int, int> endPoint = std::make_pair(2* Maze::SIZE,2 * Maze::SIZE);
+	while(true)
+	{
+		auto i = (rand() % Maze::WIDTH - 2) + 2;
+		auto j = (rand() % Maze::HEIGHT - 2) + 2;
+		if (grid_[i][j] == Type::GROUND)
+		{
+			endPoint = std::make_pair(i * Maze::SIZE, j * Maze::SIZE);
+			break;
+		}
+	}
+
+	// Creating a runner
+	Runner runner(Runner::Color::RED, startPoint, grid_, renderer_, true);
+	
+	// Running runner in the maze
+	while (!runner.isArrived(endPoint))
+	{
+		// Updating
+		update(false);
+
+		// Rendering startPoint and endPoint
+		renderPoints(startPoint, endPoint);
+
+		// Move the runner
+		runner.move();
+
+		// Render all objects
+		SDL_RenderPresent(renderer_);
+		SDL_Delay(50);
+	}
+
 	SDL_Delay(5000);
 }
 
-void Maze::update()
+void Maze::update(const bool &drawCurrentCell)
 {
 	// Filling grid
 	for (int i = 0; i<Maze::HEIGHT; i++)
@@ -92,13 +129,12 @@ void Maze::update()
 		}
 	}
 
-	// Rendering the current position cell
-	SDL_SetRenderDrawColor(renderer_, 0, 0, 255, 255);
-	SDL_RenderFillRect(renderer_, &currCellPosition_);
-
-	// Render all objects
-	SDL_RenderPresent(renderer_);
-	SDL_Delay(50);
+	if(drawCurrentCell)
+	{
+		// Rendering the current position cell
+		SDL_SetRenderDrawColor(renderer_, 0, 0, 255, 255);
+		SDL_RenderFillRect(renderer_, &currCellPosition_);
+	}
 }
 
 void Maze::generateBFS(const bool& trailOn)
@@ -161,6 +197,10 @@ void Maze::generateBFS(const bool& trailOn)
 
 		// Updating screen
 		update();
+
+		// Render all objects
+		SDL_RenderPresent(renderer_);
+		SDL_Delay(50);
 	}
 }
 
@@ -220,6 +260,10 @@ void Maze::generateRandomizedPrim()
 
 		// Updating maze
 		update();
+
+		// Render all objects
+		SDL_RenderPresent(renderer_);
+		SDL_Delay(50);
 	}
 }
 
@@ -239,3 +283,15 @@ std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> Maze::getNeighb
 	return output;
 
 };
+
+void Maze::renderPoints(const std::pair<int, int>& startPoint, const std::pair<int, int>& endPoint)
+{
+	// Rendering endPoint ans startPoint
+	SDL_FRect rect = { float(startPoint.first), float(startPoint.second), Maze::SIZE, Maze::SIZE };
+	SDL_SetRenderDrawColor(renderer_, 0, 255, 0, 255);
+	SDL_RenderFillRect(renderer_, &rect);
+
+	rect = { float(endPoint.first), float(endPoint.second), Maze::SIZE, Maze::SIZE };
+	SDL_SetRenderDrawColor(renderer_, 255, 0, 0, 255);
+	SDL_RenderFillRect(renderer_, &rect);
+}

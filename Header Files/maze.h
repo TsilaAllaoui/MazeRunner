@@ -63,9 +63,10 @@ class Maze
 
 		/**
 		* \brief Update the visual of the maze
+		* \param srawCurrentCell If we want to draw current cell
 		* \return
 		*/
-        void update();
+        void update(const bool &drawCurrentCell = true);
 
 		/**
 		* \brief Generate the maze using BFS Algorithm
@@ -87,4 +88,12 @@ class Maze
 		* \return 
 		*/
 		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> getNeighborsOfCell(int i, int j);
+		
+		/**
+		* \brief Render start and end point on the maze
+		* \param startPoint The start point
+		* \param endPoint The end Point
+		* \return
+		*/
+		void renderPoints(const std::pair<int, int>& startPoint, const std::pair<int, int>& endPoint);
 };
