@@ -27,6 +27,12 @@ Maze::Maze()
 
 	// Allocating grid
 	grid_ = std::vector<std::vector<int>>(Maze::HEIGHT, std::vector<int>(Maze::WIDTH, Type::WALL));
+
+	// Setting up the current cell depending of the algorithm
+	currCellPosition = { 1, 1, Maze::SIZE, Maze::SIZE };
+
+	// Setting up the trail
+	useTrail = false;
 }
 
 Maze::~Maze()
@@ -43,7 +49,7 @@ void Maze::run()
 	// Generate the maze
 	generate(Algorithm::BFS);
 
-	SDL_Delay(5000);
+	//SDL_Delay(5000);
 }
 
 void Maze::update()
@@ -60,11 +66,15 @@ void Maze::update()
 			SDL_RenderTexture(renderer_, Maze::textures[grid_[i][j]], NULL, &pos);
 		}
 	}
+
+	SDL_SetRenderDrawColor(renderer_, 0, 0, 255, 255);
+	SDL_RenderFillRect(renderer_, &currCellPosition);
+
 	SDL_RenderPresent(renderer_);
 	SDL_Delay(50);
 }
 
-void Maze::generate(const Algorithm &algorithm)
+void Maze::generate(const Algorithm &algorithm, const bool& trailOn)
 {
 	// For the direction
 	enum Direction {UP, DOWN, LEFT, RIGTH};
@@ -98,11 +108,18 @@ void Maze::generate(const Algorithm &algorithm)
 
 	};
 
+	bool oneAdjCell = false;
+
 	while (!q.empty())
 	{
 		// Getting current front cell and pop it from queue
 		auto pt = q.top();
-		//q.pop();
+
+		if (oneAdjCell)
+		{
+			oneAdjCell = false;
+			q.pop();
+		}
 
 		// Setting current cell as GROUND
 		grid_[pt.first][pt.second] = Type::GROUND;
@@ -112,16 +129,32 @@ void Maze::generate(const Algorithm &algorithm)
 
 		// Pop current top-most element if no adjacent valid cell found
 		if (adjCells.size() == 0 && q.size() > 0)
+		{
 			q.pop();
-		
+
+			// Updating the current cell position
+			if (trailOn)
+			{
+				currCellPosition.y = pt.first * Maze::SIZE;
+				currCellPosition.x = pt.second * Maze::SIZE;
+			}
+		}
+
+
 		// Append a random cell otherwise
 		else 
 		{
 			auto randomCell = adjCells[rand() % (adjCells.size())];
 			q.emplace(randomCell.first);
 			grid_[randomCell.second.first][randomCell.second.second] = Type::GROUND;
+			
+			// Updating the current cell position
+			currCellPosition.y = randomCell.first.first * Maze::SIZE;
+			currCellPosition.x = randomCell.first.second * Maze::SIZE;
 		}
-		
+
+		if (adjCells.size() == 1)
+			oneAdjCell = true;
 		// Updating screen
 		update();
 	}

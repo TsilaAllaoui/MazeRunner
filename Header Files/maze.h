@@ -40,6 +40,14 @@ class Maze
 		
 		// Textures of Wall and Ground
 		static SDL_Texture* textures[2];
+
+		// The current position of the current cell
+		SDL_FRect currCellPosition;
+
+		// If we need to see trail of the current cell when backtracking
+		bool useTrail;
+
+
     public:
 
 		// Constructor and destructor
@@ -61,7 +69,8 @@ class Maze
 		/**
 		* \brief Generate the maze using a given algorithm
 		* \param algorithm The algorithm type that will be used in the generation of the maze
+		* \param trailOn if we want ot see the trail of the current cell when backtracking
 		* \return
 		*/
-		void generate(const Algorithm &algorithm);
+		void generate(const Algorithm &algorithm, const bool &trailOn = true);
 };
