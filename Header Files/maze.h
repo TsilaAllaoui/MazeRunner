@@ -37,11 +37,22 @@ class Maze
 		// Useful enumration for the algorithm type that will be used in the generation of the maze
 		enum Algorithm { BFS, RandomizedPrim };
 
+		// For the direction
+		enum Direction { UP, DOWN, LEFT, RIGTH };
+
 		// The algorithm that will be used to generate the maze
 		Algorithm algorithm_;
 
-		// Constructor and destructor
-		Maze(const Algorithm &algorithm);
+		//  and destructor
+		/**
+		* \brief Constructor
+		* \param algorithm The algorithm that will be used to generate the maze 
+		* \param isMonochrome To set true if we want a monochrome version of the maze insated of using sprites
+		* \return
+		*/
+		Maze(const Algorithm &algorithm, const bool &isMonochrome = false);
+
+		// Destructor
 		~Maze();
 
 		/**
@@ -68,4 +79,12 @@ class Maze
 		* \return
 		*/
 		void generateRandomizedPrim();
+
+		/**
+		* \brief Get all neighbors of a cell at given position
+		* \param i The x coordinate
+		* \param j The y coordinate
+		* \return 
+		*/
+		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> getNeighborsOfCell(int i, int j);
 };
