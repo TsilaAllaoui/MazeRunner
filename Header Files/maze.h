@@ -19,8 +19,6 @@ class Maze
 		// Dimensions of the maze
 		static const int WIDTH, HEIGHT, SIZE;
 
-		// Useful enumeration
-		enum Type { WALL, GROUND };
 		
 		// Textures of Wall and Ground
 		static SDL_Texture* textures_[2];
@@ -33,12 +31,14 @@ class Maze
 
 
     public:
+		// Useful enumeration
+		//enum Type { WALL, GROUND };
 
 		// Useful enumration for the algorithm type that will be used in the generation of the maze
 		enum Algorithm { BFS, RandomizedPrim };
 
 		// For the direction
-		enum Direction { UP, DOWN, LEFT, RIGTH };
+		enum Direction{ UP, DOWN, LEFT, RIGTH };
 
 		// The algorithm that will be used to generate the maze
 		Algorithm algorithm_;
@@ -63,9 +63,10 @@ class Maze
 
 		/**
 		* \brief Update the visual of the maze
+		* \param srawCurrentCell If we want to draw current cell
 		* \return
 		*/
-        void update();
+        void update(const bool &drawCurrentCell = true);
 
 		/**
 		* \brief Generate the maze using BFS Algorithm
@@ -87,4 +88,12 @@ class Maze
 		* \return 
 		*/
 		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> getNeighborsOfCell(int i, int j);
+		
+		/**
+		* \brief Render start and end point on the maze
+		* \param startPoint The start point
+		* \param endPoint The end Point
+		* \return
+		*/
+		void renderPoints(const std::pair<int, int>& startPoint, const std::pair<int, int>& endPoint);
 };
